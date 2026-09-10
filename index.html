@@ -562,10 +562,10 @@ animation-iteration-count: infinite;
 </div>
 
 <!-- Scripts de YouTube y animación -->
-<script src="https://www.youtube.com/iframe_api"></script>
+
 <script>
-  let player;
-  let musicaReproduciendose = false;
+  let isPlaying = false;
+  
   // REEMPLAZA ESTE ID CON EL DE TU VIDEO DE MUSICA EN YOUTUBE
   const YOUTUBE_VIDEO_ID = 'dQw4w9WgXcQ'; 
 
@@ -587,14 +587,18 @@ animation-iteration-count: infinite;
     const envelopeScreen = document.getElementById('envelopeScreen');
     const mainContent = document.getElementById('mainContent');
     const musicToggle = document.getElementById('musicToggle');
+    const audio = document.getElementById('backgroundAudio');
 
     envelope.classList.add('abierto');
 
-    if (player && typeof player.playVideo === 'function') {
-      player.playVideo();
-      musicaReproduciendose = true;
+    audio.play().then(() => {
+      isPlaying = true;
       musicToggle.textContent = '🔊';
-    }
+    }).catch(error => {
+      console.log("Bloqueo de reproducción:", error);
+      isPlaying = false;
+      musicToggle.textContent = '🔇';
+    });
 
     setTimeout(() => {
       envelopeScreen.classList.add('oculto');
@@ -604,17 +608,20 @@ animation-iteration-count: infinite;
   }
 
   function alternarMusica() {
+    const audio = document.getElementById('backgroundAudio');
     const musicToggle = document.getElementById('musicToggle');
-    if (!player || typeof player.pauseVideo !== 'function') return;
 
-    if (musicaReproduciendose) {
-      player.pauseVideo();
+    if (isPlaying) {
+      audio.pause();
       musicToggle.textContent = '🔇';
-      musicaReproduciendose = false;
+      isPlaying = false;
     } else {
-      player.playVideo();
-      musicToggle.textContent = '🔊';
-      musicaReproduciendose = true;
+      audio.play().then(() => {
+        musicToggle.textContent = '🔊';
+        isPlaying = true;
+      }).catch(err => {
+        console.log("Error al reproducir:", err);
+      });
     }
   }
 
